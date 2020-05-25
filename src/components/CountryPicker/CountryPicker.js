@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { NativeSelect, FormControl } from '@material-ui/core';
 
-import { getCountries } from '../../api';
+import useHttp from '../../hooks/useHttp';
 import { GLOBAL } from '../../shared/consts';
 
 import styles from './CountryPicker.module.css';
 
+const API_COUNTRIES_URL = 'https://covid19.mathdro.id/api/countries';
+
 const Countries = ({ handleCountryChange }) => {
   const [countries, setCountries] = useState([]);
+  const { response, isLoading, setUrl } = useHttp(API_COUNTRIES_URL);
 
   useEffect(() => {
-    const fetchAPI = async () => {
-      setCountries(await getCountries());
-    };
-
-    fetchAPI();
+    setUrl(API_COUNTRIES_URL);
   }, []);
+
+  useEffect(() => {
+    if (response != null) {
+      console.log(response)
+      setCountries(response.countries.map((country) => country.name));
+    }
+  }, [response]);
 
   return (
     <FormControl className={styles.formControl}>
